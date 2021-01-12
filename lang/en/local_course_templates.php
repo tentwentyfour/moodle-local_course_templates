@@ -29,7 +29,8 @@ $string['inputinfo'] = 'Please enter below infomation';
 $string['inputinfotip'] = 'Please enter new course infomation';
 $string['course_templates:view'] = 'View course template';
 $string['course_templates:edit'] = 'Edit course template';
-$string['hiddencategories'] = 'Hidden categries';
+$string['course_templates:use'] = 'Add new courses from course templates';
+$string['hiddencategories'] = 'Hidden categories';
 
 $string['startdate'] = 'Start date';
 $string['starttime'] = 'Start time';

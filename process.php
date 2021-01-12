@@ -53,11 +53,11 @@ $location = optional_param('location', '', PARAM_RAW);
 $course_date = optional_param('course_date', '', PARAM_RAW);
 
 if(!empty($start_datetime)){
-	$start_datetime = strtotime($course_date.' '.$start_datetime);
+    $start_datetime = strtotime($course_date.' '.$start_datetime);
 }
 
 if(!empty($end_datetime)){
-	$end_datetime = strtotime($course_date.' '.$end_datetime);
+    $end_datetime = strtotime($course_date.' '.$end_datetime);
 }
 
 if (!$fullname || !$shortname || !$categoryid || !$courseid) {
@@ -68,18 +68,18 @@ $externalObj = new core_course_external();
 $res = $externalObj->duplicate_course($courseid, $fullname, $shortname, $categoryid, $visible, $options);
 
 if (@isset($res['id'])) {
-	$course = $DB->get_record('course',array('id'=>$res['id']));
-	if(!empty($start_datetime)){
-		$course->startdate = $start_datetime;
-		$course->enddate = $end_datetime;
-		$DB->update_record('course', $course);
-	}
+    $course = $DB->get_record('course',array('id'=>$res['id']));
+    if(!empty($start_datetime)){
+        $course->startdate = $start_datetime;
+        $course->enddate = $end_datetime;
+        $DB->update_record('course', $course);
+    }
 
-	if(!empty($location)){
-		$event_option = $DB->get_record('course_format_options',array('courseid'=>$course->id,'format'=>'event','name'=>'location'));
-		$event_option->value = $location;
-		$DB->update_record('course_format_options', $event_option);
-	}
+    if(!empty($location)){
+        $event_option = $DB->get_record('course_format_options',array('courseid'=>$course->id,'format'=>'event','name'=>'location'));
+        $event_option->value = $location;
+        $DB->update_record('course_format_options', $event_option);
+    }
     exit(json_encode(array('status' => 1, 'id' => $res['id'], 'shortname' => $res['shortname'])));
 } else {
     exit(json_encode(array('status' => 0)));

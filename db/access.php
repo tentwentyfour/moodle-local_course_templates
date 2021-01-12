@@ -16,24 +16,38 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'local/course_templates:view' => array(
+$capabilities = [
+    'local/course_templates:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
-    ),
+        ]
+    ],
 
-    'local/course_templates:edit' => array(
+    // Permission that allows a user to use templates
+    // to create new courses
+    // Unsure whether the system context is correct here.
+    'local/course_templates:use' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW,
+        ]
+    ],
+
+    'local/course_templates:edit' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
-    ),
-);
+        ]
+    ],
+];

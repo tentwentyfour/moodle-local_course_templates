@@ -18,13 +18,15 @@
  * @package   local_course_templates
  * @copyright 2017 onwards, emeneo (www.emeneo.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @see       https://docs.moodle.org/dev/version.php
  */
- 
+
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_course_templates';
-$plugin->cron = 0; 
-$plugin->version  = 2019120800;
-$plugin->requires = 2015041700;
+$plugin->cron = 0;
+$plugin->version  = 2021011201;
+$plugin->requires = 2019052000;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = 'Course templates plugin Version 3.7-a';
+$plugin->supported = [37, 310];

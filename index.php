@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once(dirname(__FILE__) . '/../../config.php');
-require_once('lib.php');
+require_once dirname(__FILE__) . '/../../config.php';
+require_once 'lib.php';
 
 require_login();
 
@@ -35,10 +35,10 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($header);
 
-$sel_cate = optional_param('sel_cate', 0, PARAM_INT); 
+$sel_cate = optional_param('sel_cate', 0, PARAM_INT);
 $course_status = optional_param('status', 0, PARAM_INT);
 $course_id = optional_param('courseid', 0, PARAM_INT);
-$cate_id = optional_param('cateid', 0, PARAM_INT); 
+$cate_id = optional_param('cateid', 0, PARAM_INT);
 
 require_capability('local/course_templates:view', $context);
 
@@ -154,7 +154,7 @@ if (!$step) {
     $courseid = $course_id;
     if ($status == 1) {
         $redirecturl = $CFG->wwwroot.'/course/view.php?id='.$courseid;
-        
+
         echo html_writer::tag('p', get_string('createsuccess', 'local_course_templates'));
         echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'"', 'class' => 'btn btn-primary')));
     } else if ($status == 2) {

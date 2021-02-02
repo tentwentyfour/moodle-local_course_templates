@@ -39,6 +39,7 @@ $sel_cate = optional_param('sel_cate', 0, PARAM_INT);
 $course_status = optional_param('status', 0, PARAM_INT);
 $course_id = optional_param('courseid', 0, PARAM_INT);
 $cate_id = optional_param('cateid', 0, PARAM_INT);
+$failure_reason = optional_param('failure_reason', '', PARAM_CLEANHTML);
 
 require_capability('local/course_templates:view', $context);
 
@@ -78,7 +79,10 @@ if (!$step) {
     $html_stepper.= '</div>';
     echo $html_stepper;
 
-    echo html_writer::tag('p', html_writer::tag('strong', get_string('choosetemplate', 'local_course_templates')));
+    echo html_writer::tag(
+        'p',
+        html_writer::tag('strong', get_string('choosetemplate', 'local_course_templates'))
+    );
     echo get_template_list_form();
 } else if ($step == 2) {
     $html_stepper = '';
@@ -108,9 +112,32 @@ if (!$step) {
     echo $html_stepper;
     if (!$cid) {
         echo $OUTPUT->notification(get_string('choosetemplate', 'local_course_templates'));
-        echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'"', 'class' => 'btn btn-primary')));
+        echo html_writer::tag(
+            'p',
+            html_writer::empty_tag(
+                'input',
+                array(
+                    'type' => 'button',
+                    'value' => 'Back',
+                    'onclick' => 'javascript :history.back(-1)',
+                    'class' => 'btn btn-primary',
+                    'style' => 'margin-right:20px;'
+                )
+            ).html_writer::empty_tag(
+                'input',
+                array(
+                    'type' => 'button',
+                    'value' => get_string('continue', 'local_course_templates'),
+                    'onclick' => 'window.location.href="'.$redirecturl.'"',
+                    'class' => 'btn btn-primary'
+                )
+            )
+        );
     } else {
-        echo html_writer::tag('p', html_writer::tag('strong', get_string('choosecategory', 'local_course_templates')));
+        echo html_writer::tag(
+            'p',
+            html_writer::tag('strong', get_string('choosecategory', 'local_course_templates'))
+        );
         echo get_template_categories_form($cid);
     }
 } else if ($step == 3) {
@@ -139,31 +166,144 @@ if (!$step) {
     $html_stepper.= '</button>';
     $html_stepper.= '</div>';
     $html_stepper.= '</div>';
-    $html_stepper.= '<input type="hidden" id="jump_to" value="'.$course_templates_config->jump_to.'">';
+    $html_stepper.= sprintf(
+        '<input type="hidden" id="jump_to" value="%s">',
+        $course_templates_config->jump_to
+    );
+
     echo $html_stepper;
+
     if (!$sel_cate) {
-        echo $OUTPUT->notification(get_string('choosecategory', 'local_course_templates'));
-        echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'?step=2&cid='.$cid.'"', 'class' => 'btn btn-primary')));
+        echo $OUTPUT->notification(
+            get_string('choosecategory', 'local_course_templates')
+        );
+        echo html_writer::tag(
+            'p',
+            html_writer::empty_tag(
+                'input',
+                array(
+                    'type' => 'button',
+                    'value' => get_string('Back'),
+                    'onclick' => 'javascript:history.back(-1)',
+                    'class' => 'btn btn-primary',
+                    'style' => 'margin-right:20px;'
+                )
+            ).html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => get_string('continue', 'local_course_templates'),
+                    // 'onclick' => sprintf(
+                    //     'window.location.href="%s?step=2&cid=%d"',
+                    //     $redirecturl,
+                    //     $cid
+                    // ),
+                    'class' => 'btn btn-primary'
+                ]
+            )
+        );
     } else {
         $categoryid = $sel_cate;
         echo html_writer::tag('p', html_writer::tag('strong', get_string('inputinfo', 'local_course_templates')));
         echo get_template_setting_form($cid, $categoryid);
     }
-} else if ($step == 4) {
+} elseif ($step == 4) {
     $status = $course_status;
     $courseid = $course_id;
-    if ($status == 1) {
-        $redirecturl = $CFG->wwwroot.'/course/view.php?id='.$courseid;
 
-        echo html_writer::tag('p', get_string('createsuccess', 'local_course_templates'));
-        echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'"', 'class' => 'btn btn-primary')));
-    } else if ($status == 2) {
+    // TODO: State::SUCCESS
+    if ($status == 1) {
+        // Override $redirecturl
+        $redirecturl = sprintf(
+            '%s/course/view.php?id=%d',
+            $CFG->wwwroot,
+            $courseid
+        );
+
+        echo html_writer::tag(
+            'p',
+            get_string('createsuccess', 'local_course_templates')
+        );
+        echo html_writer::tag(
+            'p',
+            html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => get_string('back'),
+                    'onclick' => 'javascript:history.back(-1)',
+                    'class' => 'btn btn-primary',
+                    'style' => 'margin-right:20px;',
+                ]
+            ).html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => get_string('continue', 'local_course_templates'),
+                    'onclick' => 'window.location.href="'.$redirecturl.'"',
+                    'class' => 'btn btn-primary',
+                ]
+            )
+        );
+    } elseif ($status == 2) {   // Status::INFOMISSING/ERROR
         $cateid = $cate_id;
-        echo $OUTPUT->notification(get_string('inputinfotip', 'local_course_templates'));
-        echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'?step=3&cid='.$courseid.'&sel_cate='.$cateid.'"', 'class' => 'btn btn-primary')));
+        echo $OUTPUT->notification(
+            get_string('inputinfotip', 'local_course_templates')
+        );
+        echo html_writer::tag(
+            'p',
+            html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => 'Back',
+                    'onclick' => 'javascript:history.back(-1)',
+                    'class' => 'btn btn-primary',
+                    'style' => 'margin-right:20px;'
+                ]
+            ).html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => get_string('continue', 'local_course_templates'),
+                    'onclick' => sprintf(
+                        'window.location.href="%s?step=3&cid=%d&sel_cate=%d"',
+                        $redirecturl,
+                        $courseid,
+                        $cateid
+                    ),
+                    'class' => 'btn btn-primary'
+                ]
+            )
+        );
     } else {
-        echo $OUTPUT->notification(get_string('createfailed', 'local_course_templates'));
-        echo html_writer::tag('p', html_writer::empty_tag('input', array('type' => 'button', 'value' => 'Back', 'onclick' => 'javascript :history.back(-1)', 'class' => 'btn btn-primary', 'style' => 'margin-right:20px;')).html_writer::empty_tag('input', array('type' => 'button', 'value' => get_string('continue', 'local_course_templates'), 'onclick' => 'window.location.href="'.$redirecturl.'"', 'class' => 'btn btn-primary')));
+        echo $OUTPUT->notification(
+            get_string('createfailed', 'local_course_templates', $failure_reason)
+        );
+        echo html_writer::tag(
+            'p',
+            html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => 'Back',
+                    'onclick' => 'javascript:history.back(-1)',
+                    'class' => 'btn btn-primary',
+                    'style' => 'margin-right:20px;'
+                ]
+            ).html_writer::empty_tag(
+                'input',
+                [
+                    'type' => 'button',
+                    'value' => get_string('continue', 'local_course_templates'),
+                    'onclick' => sprintf(
+                        'window.location.href="%s"',
+                        $redirecturl
+                    ),
+                    'class' => 'btn btn-primary'
+                ]
+            )
+        );
     }
 }
 
